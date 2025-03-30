@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import demoVideo from '../assets/videos/lion-king.mp4';
 import LockIcon from '../assets/images/Lock.svg';
 import UnlockIcon from '../assets/images/Unlock.svg';
+import CanvasLogo from '../assets/images/canvas-logo.svg';
+import './CanvasAEM.css';
 
 export default function CanvasAEMLanding() {
   const [showForm, setShowForm] = useState(false);
@@ -11,11 +13,21 @@ export default function CanvasAEMLanding() {
   const [wasFullScreen, setWasFullScreen] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', company: '' });
   const [submitError, setSubmitError] = useState(null);
+  const [activeTab, setActiveTab] = useState("ott");
 
   const videoRef = useRef(null);
   const section1Ref = useRef(null);
   const section2Ref = useRef(null);
+  const section3Ref = useRef(null);
   const formTimeThreshold = 10;
+
+  useEffect(() => {
+    const tabInterval = setInterval(() => {
+      setActiveTab(prev => prev === "ott" ? "ovp" : "ott");
+    }, 3000);
+    
+    return () => clearInterval(tabInterval);
+  }, []);
 
   useEffect(() => {
     const handleScroll = (e) => {
@@ -110,94 +122,330 @@ export default function CanvasAEMLanding() {
     }
   };
 
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+  };
+
   return (
-    <div className="bg-black text-white font-sans snap-y snap-mandatory h-screen overflow-y-auto scroll-smooth">
-      <section ref={section1Ref} className="snap-start min-h-screen flex flex-col justify-center items-center px-6 text-center">
-        <h1 className="py-2.5 text-4xl md:text-6xl font-bold bg-gradient-to-r from-orange-400 via-green-400 to-blue-500 text-transparent bg-clip-text mb-4">
-          Stop Losing Viewers After the Play.
+    <div className="canvas-container">
+      <img src={CanvasLogo} alt="Canvas Logo" className="canvas-logo" />
+      
+      {/* First Section */}
+      <section ref={section1Ref} className="canvas-section">
+        <h1 className="gradient-heading heading-main">
+          Stop Losing Viewers After the Play
         </h1>
         <p className="text-xl md:text-2xl max-w-2xl mb-8">
-          Canvas AEM is a plug-and-play conditional access layer that lets OTT platforms, OVPs, and media tech vendors unlock engagement, capture verified user data, and monetize smarter — right inside the video experience.
+          Canvas AEL helps OTT, OVP, and media platforms capture first-party data
+          and monetize smarter — right inside the video
         </p>
-        <div className="w-full max-w-3xl aspect-video bg-gray-800 rounded-2xl overflow-hidden mb-4 relative">
-          <video ref={videoRef} src={demoVideo} className="w-full h-full object-cover" controls autoPlay muted playsInline onTimeUpdate={handleTimeUpdate} onSeeking={handleSeeking} controlsList="nodownload nopictureinpicture" disablePictureInPicture />
+        <div className="video-container">
+          <video 
+            ref={videoRef}
+            src={demoVideo}
+            className="canvas-video"
+            controls
+            autoPlay
+            muted
+            playsInline
+            onTimeUpdate={handleTimeUpdate}
+            onSeeking={handleSeeking}
+            controlsList="nodownload nopictureinpicture"
+            disablePictureInPicture
+          />
+          
           {showForm && (
-            <div className="fixed inset-0 md:absolute md:inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center backdrop-blur-sm z-50 p-4">
-              <div className="w-full max-w-sm p-6 rounded-lg text-center">
+            <div className="form-overlay">
+              <div className="overlay-content">
                 <div className="mb-4 flex justify-center">
-                  <img src={unlocking ? UnlockIcon : LockIcon} alt="Lock" className="w-16 h-16 transition-all duration-300" />
+                  <img 
+                    src={unlocking ? UnlockIcon : LockIcon}
+                    alt={unlocking ? "Unlock Icon" : "Lock Icon"}
+                    className="overlay-icon"
+                  />
                 </div>
-                <h3 className="text-xl text-white font-bold mb-4">
-                  {unlocking ? "Unlocking your content..." : "Here you can collect your First-Party Data by"}
+                <h3 className="overlay-heading">
+                  {unlocking ? "Unlocking your content..." : "AEL in action to collect your First-Party Data by"}
                 </h3>
-                <form onSubmit={handleSubmit} className={`space-y-3 mt-2 ${unlocking ? 'opacity-70 pointer-events-none' : ''}`}>
-                  {['name', 'email', 'company'].map((field) => (
-                    <input key={field} name={field} type={field === 'email' ? 'email' : 'text'} value={formData[field]} onChange={handleInputChange} placeholder={`Your ${field.charAt(0).toUpperCase() + field.slice(1)}`} className="px-4 py-2 bg-gray-700 bg-opacity-50 w-full rounded-full text-white text-sm" required disabled={unlocking} />
-                  ))}
+                <form onSubmit={handleSubmit} className={`form-container ${unlocking ? 'unlocking' : ''}`}>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="Your Name"
+                    className="form-input"
+                    required
+                    disabled={unlocking}
+                  />
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="Your Email"
+                    className="form-input"
+                    required
+                    disabled={unlocking}
+                  />
+                  <input
+                    type="text"
+                    name="company"
+                    value={formData.company}
+                    onChange={handleInputChange}
+                    placeholder="Your Company"
+                    className="form-input"
+                    required
+                    disabled={unlocking}
+                  />
                   {submitError && <p className="text-red-400 text-sm">{submitError}</p>}
-                  <div className="flex justify-center mt-4">
-                    <button type="submit" className="px-6 py-2 bg-blue-500 text-white text-sm font-medium rounded-full flex items-center justify-center" disabled={unlocking}>
-                      {unlocking ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div> : "Submit"}
+                  <div className="flex justify-center">
+                    <button type="submit" className="form-button" disabled={unlocking}>
+                      {unlocking ? <div className="loading-spinner"></div> : "Submit"}
                     </button>
                   </div>
                 </form>
               </div>
             </div>
           )}
+          
           {showUnlockedMessage && (
-            <div className="absolute inset-0 bg-black bg-opacity-70 flex flex-col items-center justify-center backdrop-blur-sm z-50">
-              <div className="w-full max-w-sm p-6 rounded-lg text-center">
+            <div className="form-overlay">
+              <div className="overlay-content">
                 <div className="mb-4 flex justify-center">
-                  <img src={UnlockIcon} alt="Unlock Icon" className="w-24 h-24" />
+                  <img src={UnlockIcon} alt="Unlock Icon" className="overlay-icon" style={{ width: '6rem', height: '6rem' }} />
                 </div>
-                <h3 className="text-xl text-white font-bold mb-2">Content Already Unlocked</h3>
+                <h3 className="overlay-heading">Content Already Unlocked</h3>
               </div>
             </div>
           )}
         </div>
-        <p className="text-sm text-gray-400 mb-4">Experience how Canvas AEM turns passive plays into active conversions.</p>
-        <button onClick={handleUnlockExperience} className="bg-gradient-to-r from-orange-400 to-blue-500 text-white py-3 px-6 rounded-full text-lg font-medium shadow-lg">
+        
+        <p className="text-sm text-gray-400 my-6 italic">
+          Experience how Canvas AEM turns passive plays into active conversions.
+        </p>
+        
+        <button onClick={handleUnlockExperience} className="gradient-button">
           Unlock Full Experience
         </button>
       </section>
 
-      <section ref={section2Ref} className="snap-start min-h-screen bg-gradient-to-br from-zinc-900 to-black px-6 py-20 flex flex-col justify-center">
-        <h2 className="text-3xl md:text-5xl font-semibold text-center mb-12">Built for Modern Media Workflows</h2>
-        <div className="grid md:grid-cols-2 gap-12 max-w-6xl mx-auto text-center md:text-left">
-          <div>
-            <h3 className="text-xl font-semibold mb-2 text-orange-300">For OVPs & Backend Platforms</h3>
-            <ul className="list-disc list-inside text-lg text-gray-300">
-              <li>Add Canvas AEM as a layer on top of your player stack</li>
-              <li>Offer first-party engagement tools to your customers</li>
-              <li>Plug into your existing APIs — REST, GraphQL, etc.</li>
-            </ul>
+      {/* Second Section */}
+      <section ref={section2Ref} className="canvas-section second-section">
+        <div className="accent-dot accent-dot-top"></div>
+        <div className="accent-dot accent-dot-bottom"></div>
+        
+        <h2 className="gradient-heading heading-secondary">
+          Built for Modern Media Workflows
+        </h2>
+
+        <div className="content-container">
+          <div className="tabs-container">
+            <button 
+              onClick={() => handleTabChange("ovp")}
+              className={`tab ${activeTab === "ovp" ? "tab-gradient" : "tab-outline"}`}
+            >
+              For OVP & Backend Platforms
+            </button>
+            <button 
+              onClick={() => handleTabChange("ott")}
+              className={`tab ${activeTab === "ott" ? "tab-gradient" : "tab-outline"}`}
+            >
+              For OTT & SVOD/AVOD Platforms
+            </button>
           </div>
-          <div>
-            <h3 className="text-xl font-semibold mb-2 text-blue-300">For OTT & SVOD/AVOD Platforms</h3>
-            <ul className="list-disc list-inside text-lg text-gray-300">
-              <li>Capture viewer data post-play without disrupting UX</li>
-              <li>Unlock access to premium content, episodes, or offers</li>
-              <li>Drive retention and monetization with intent-based triggers</li>
-            </ul>
+
+          {activeTab === "ott" && (
+            <div className="cards-grid">
+              <div className="feature-card">
+                <div className="card-border"></div>
+                <div className="card-bg"></div>
+                <div className="card-bottom-border"></div>
+                <div className="card-icon-container">
+                  <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
+                    <path d="M16 44H8V56H16V44Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M32 36H24V56H32V36Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M48 28H40V56H48V28Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M4 56H52" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M26 18L32 12L56 36" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M44 12H56V24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <h3 className="card-title">
+                  Capture valuable post-play insights without disrupting UX
+                </h3>
+              </div>
+
+              <div className="feature-card">
+                <div className="card-border"></div>
+                <div className="card-bg"></div>
+                <div className="card-bottom-border"></div>
+                <div className="card-icon-container">
+                  <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
+                    <path d="M42 24H22L14 38H50L42 24Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M32 8L40 18H24L32 8Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="32" cy="32" r="24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <h3 className="card-title">
+                  First party data to make customized offers
+                </h3>
+              </div>
+
+              <div className="feature-card">
+                <div className="card-border"></div>
+                <div className="card-bg"></div>
+                <div className="card-bottom-border"></div>
+                <div className="card-icon-container">
+                  <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
+                    <path d="M8 56H56" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M16 38V56" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M16 28V32" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M32 22V56" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M32 12V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M48 32V56" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="16" cy="16" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="32" cy="20" r="4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="48" cy="24" r="8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M48 8V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M44 12H52" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <h3 className="card-title">
+                  Boost retention and CPMs with smart triggers
+                </h3>
+              </div>
+            </div>
+          )}
+
+          {activeTab === "ovp" && (
+            <div className="cards-grid">
+              <div className="feature-card">
+                <div className="card-border"></div>
+                <div className="card-bg"></div>
+                <div className="card-bottom-border"></div>
+                <div className="card-icon-container">
+                  <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
+                    <path d="M32 56C45.2548 56 56 45.2548 56 32C56 18.7452 45.2548 8 32 8C18.7452 8 8 18.7452 8 32C8 45.2548 18.7452 56 32 56Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M32 42C37.5228 42 42 37.5228 42 32C42 26.4772 37.5228 22 32 22C26.4772 22 22 26.4772 22 32C22 37.5228 26.4772 42 32 42Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M32 26C33.1046 26 34 26.8954 34 28C34 29.1046 33.1046 30 32 30C30.8954 30 30 29.1046 30 28C30 26.8954 30.8954 26 32 26Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M32 34C33.1046 34 34 34.8954 34 36C34 37.1046 33.1046 38 32 38C30.8954 38 30 37.1046 30 36C30 34.8954 30.8954 34 32 34Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M28 30C26.8954 30 26 30.8954 26 32C26 33.1046 26.8954 34 28 34C29.1046 34 30 33.1046 30 32C30 30.8954 29.1046 30 28 30Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M36 30C34.8954 30 34 30.8954 34 32C34 33.1046 34.8954 34 36 34C37.1046 34 38 33.1046 38 32C38 30.8954 37.1046 30 36 30Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <h3 className="card-title">
+                  Blend AEL seamlessly with existing stacks
+                </h3>
+              </div>
+
+              <div className="feature-card">
+                <div className="card-border"></div>
+                <div className="card-bg"></div>
+                <div className="card-bottom-border"></div>
+                <div className="card-icon-container">
+                  <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
+                    <path d="M8 16H56V48H8V16Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M8 24H56" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M16 20C16.5523 20 17 19.5523 17 19C17 18.4477 16.5523 18 16 18C15.4477 18 15 18.4477 15 19C15 19.5523 15.4477 20 16 20Z" fill="currentColor"/>
+                    <path d="M22 20C22.5523 20 23 19.5523 23 19C23 18.4477 22.5523 18 22 18C21.4477 18 21 18.4477 21 19C21 19.5523 21.4477 20 22 20Z" fill="currentColor"/>
+                    <path d="M15 36L21 30L26 35L32 29L39 36" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <h3 className="card-title">
+                  Offer first-party engagement & retain audiences
+                </h3>
+              </div>
+
+              <div className="feature-card">
+                <div className="card-border"></div>
+                <div className="card-bg"></div>
+                <div className="card-bottom-border"></div>
+                <div className="card-icon-container">
+                  <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" className="text-white">
+                    <path d="M8 16H24V32H8V16Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M40 16H56V32H40V16Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M24 32H40V48H24V32Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M16 32V40H24" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M48 32V40H40" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path d="M40 24H24V16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+                <h3 className="card-title">
+                  Compatible with REST, and existing APIs
+                </h3>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Third Section - Flexibility */}
+      <section ref={section3Ref} className="flexibility-section">
+        <h2 className="gradient-heading heading-flexibility">Flexibility at Your Fingertips</h2>
+        
+        <div className="deployment-options">
+          <div className="deployment-option">
+            <div className="cloud-icon">
+              <svg width="100" height="100" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M75 65C82.1797 65 88 59.1797 88 52C88 44.8203 82.1797 39 75 39C74.6588 39 74.3212 39.0142 73.9873 39.0422C72.2165 30.3104 64.4355 24 55.3333 24C44.8133 24 36.3333 32.9695 36.3333 44.0204C36.3333 44.688 36.3647 45.3462 36.4259 45.9924C35.9526 45.9322 35.4694 45.9 34.9778 45.9C27.7426 45.9 21.9 51.7426 21.9 58.9778C21.9 66.213 27.7426 72.0556 34.9778 72.0556H75V65Z" stroke="url(#paint0_linear)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                <defs>
+                  <linearGradient id="paint0_linear" x1="23" y1="48" x2="87" y2="48" gradientUnits="userSpaceOnUse">
+                    <stop offset="0.05" stopColor="#F5841F"/>
+                    <stop offset="0.35" stopColor="#EBC554"/>
+                    <stop offset="0.53" stopColor="#00B3A6"/>
+                    <stop offset="0.87" stopColor="#5B5FD1"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div className="deployment-title">On Cloud</div>
+            <div className="deployment-description">
+              For quicker integration with<br />REST APIs
+            </div>
+          </div>
+          
+          <div className="deployment-option">
+            <div className="onprem-icon">
+              <svg width="100" height="100" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M40 75V25C40 23.3431 41.3431 22 43 22H77C78.6569 22 80 23.3431 80 25V75C80 76.6569 78.6569 78 77 78H43C41.3431 78 40 76.6569 40 75Z" stroke="url(#paint0_linear)" strokeWidth="3"/>
+                <line x1="41" y1="35" x2="79" y2="35" stroke="url(#paint1_linear)" strokeWidth="3"/>
+                <line x1="41" y1="65" x2="79" y2="65" stroke="url(#paint2_linear)" strokeWidth="3"/>
+                <defs>
+                  <linearGradient id="paint0_linear" x1="40" y1="50" x2="80" y2="50" gradientUnits="userSpaceOnUse">
+                    <stop offset="0.05" stopColor="#F5841F"/>
+                    <stop offset="0.35" stopColor="#EBC554"/>
+                    <stop offset="0.53" stopColor="#00B3A6"/>
+                    <stop offset="0.87" stopColor="#5B5FD1"/>
+                  </linearGradient>
+                  <linearGradient id="paint1_linear" x1="41" y1="35.5" x2="79" y2="35.5" gradientUnits="userSpaceOnUse">
+                    <stop offset="0.05" stopColor="#F5841F"/>
+                    <stop offset="0.35" stopColor="#EBC554"/>
+                    <stop offset="0.53" stopColor="#00B3A6"/>
+                    <stop offset="0.87" stopColor="#5B5FD1"/>
+                  </linearGradient>
+                  <linearGradient id="paint2_linear" x1="41" y1="65.5" x2="79" y2="65.5" gradientUnits="userSpaceOnUse">
+                    <stop offset="0.05" stopColor="#F5841F"/>
+                    <stop offset="0.35" stopColor="#EBC554"/>
+                    <stop offset="0.53" stopColor="#00B3A6"/>
+                    <stop offset="0.87" stopColor="#5B5FD1"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div className="deployment-title">On Prem</div>
+            <div className="deployment-description">
+              For customisable integration with<br />more control
+            </div>
           </div>
         </div>
 
-        <div className="mt-20 text-center">
-          <h4 className="text-xl font-semibold mb-4">Deployment Options</h4>
-          <div className="flex flex-col md:flex-row justify-center items-center gap-8">
-            <div className="bg-zinc-800 p-5 rounded-xl w-64 h-40 flex flex-col justify-center">
-              <h5 className="text-lg font-medium mb-2">☁️ On Cloud</h5>
-              <p className="text-sm text-gray-400">Ready-to-integrate via REST APIs</p>
-            </div>
-            <div className="bg-zinc-800 p-5 rounded-xl w-64 h-40 flex flex-col justify-center">
-              <h5 className="text-lg font-medium mb-2">🏢 On Prem</h5>
-              <p className="text-sm text-gray-400">Full control with custom integration options</p>
-            </div>
+        <footer className="footer">
+          <div className="footer-content">
+            <div>© 2025 Canvas Space Inc.</div>
+            <div>hello@canvas.space</div>
+            <div>5548, Abington Drive, Newark, California, 94560</div>
           </div>
-        </div>
-
-        <footer className="text-center py-6 text-gray-500 text-sm mt-20">
-          ©2024 Canvas Space Inc. | hello@canvas.space | Terms & Privacy
         </footer>
       </section>
     </div>
