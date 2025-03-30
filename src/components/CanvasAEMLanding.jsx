@@ -104,7 +104,6 @@ export default function CanvasAEMLanding() {
       setTimeout(() => setShowUnlockedMessage(false), 350);
     } else {
       if (videoRef.current) {
-        videoRef.current.currentTime = formTimeThreshold;
         videoRef.current.pause();
         setShowForm(true);
       }
