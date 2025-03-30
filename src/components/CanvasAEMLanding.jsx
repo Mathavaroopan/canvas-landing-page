@@ -232,9 +232,6 @@ export default function CanvasAEMLanding() {
 
       {/* Second Section */}
       <section ref={section2Ref} className="canvas-section second-section">
-        <div className="accent-dot accent-dot-top"></div>
-        <div className="accent-dot accent-dot-bottom"></div>
-        
         <h2 className="gradient-heading heading-secondary">
           Built for Modern Media Workflows
         </h2>
