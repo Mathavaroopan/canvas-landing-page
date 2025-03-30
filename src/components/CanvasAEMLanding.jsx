@@ -1,4 +1,3 @@
-// Canvas AEM Landing Page - Fully Responsive with Footer & Layout Fixes
 import React, { useState, useRef, useEffect } from 'react';
 import demoVideo from '../assets/videos/lion-king.mp4';
 import LockIcon from '../assets/images/Lock.svg';
@@ -11,6 +10,7 @@ export default function CanvasAEMLanding() {
   const [showUnlockedMessage, setShowUnlockedMessage] = useState(false);
   const [wasFullScreen, setWasFullScreen] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', company: '' });
+  const [submitError, setSubmitError] = useState(null);
 
   const videoRef = useRef(null);
   const section1Ref = useRef(null);
@@ -69,16 +69,33 @@ export default function CanvasAEMLanding() {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setUnlocking(true);
-    setTimeout(() => {
+    setSubmitError(null);
+    
+    try {
+      const response = await fetch('https://resplendent-strudel-d7b326.netlify.app/.netlify/functions/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      
+      const data = await response.json();
+      console.log('Form submission successful:', data);
+      
       setFormSubmitted(true);
       setShowForm(false);
       setUnlocking(false);
       if (wasFullScreen && videoRef.current) enterFullscreen(videoRef.current);
       if (videoRef.current) videoRef.current.play();
-    }, 1000);
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setSubmitError('Failed to submit form. Please try again.');
+      setUnlocking(false);
+    }
   };
 
   const handleUnlockExperience = () => {
@@ -116,8 +133,9 @@ export default function CanvasAEMLanding() {
                 </h3>
                 <form onSubmit={handleSubmit} className={`space-y-3 mt-2 ${unlocking ? 'opacity-70 pointer-events-none' : ''}`}>
                   {['name', 'email', 'company'].map((field) => (
-                    <input key={field} name={field} type="text" value={formData[field]} onChange={handleInputChange} placeholder={`Your ${field.charAt(0).toUpperCase() + field.slice(1)}`} className="px-4 py-2 bg-gray-700 bg-opacity-50 w-full rounded-full text-white text-sm" required disabled={unlocking} />
+                    <input key={field} name={field} type={field === 'email' ? 'email' : 'text'} value={formData[field]} onChange={handleInputChange} placeholder={`Your ${field.charAt(0).toUpperCase() + field.slice(1)}`} className="px-4 py-2 bg-gray-700 bg-opacity-50 w-full rounded-full text-white text-sm" required disabled={unlocking} />
                   ))}
+                  {submitError && <p className="text-red-400 text-sm">{submitError}</p>}
                   <div className="flex justify-center mt-4">
                     <button type="submit" className="px-6 py-2 bg-blue-500 text-white text-sm font-medium rounded-full flex items-center justify-center" disabled={unlocking}>
                       {unlocking ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div> : "Submit"}
@@ -168,22 +186,21 @@ export default function CanvasAEMLanding() {
         <div className="mt-20 text-center">
           <h4 className="text-xl font-semibold mb-4">Deployment Options</h4>
           <div className="flex flex-col md:flex-row justify-center items-center gap-8">
-            <div className="bg-zinc-800 p-6 rounded-xl w-64">
+            <div className="bg-zinc-800 p-5 rounded-xl w-64 h-40 flex flex-col justify-center">
               <h5 className="text-lg font-medium mb-2">☁️ On Cloud</h5>
               <p className="text-sm text-gray-400">Ready-to-integrate via REST APIs</p>
             </div>
-            <div className="bg-zinc-800 p-6 rounded-xl w-64">
+            <div className="bg-zinc-800 p-5 rounded-xl w-64 h-40 flex flex-col justify-center">
               <h5 className="text-lg font-medium mb-2">🏢 On Prem</h5>
               <p className="text-sm text-gray-400">Full control with custom integration options</p>
             </div>
           </div>
         </div>
 
-        {/* Footer included in section 2 */}
         <footer className="text-center py-6 text-gray-500 text-sm mt-20">
           ©2024 Canvas Space Inc. | hello@canvas.space | Terms & Privacy
         </footer>
       </section>
     </div>
   );
-} 
+}
