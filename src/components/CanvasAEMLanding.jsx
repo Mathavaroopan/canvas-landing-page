@@ -222,7 +222,7 @@ export default function CanvasAEMLanding() {
         </div>
         
         <p className="text-sm text-gray-400 my-6 italic">
-          Experience how Canvas AEM turns passive plays into active conversions.
+          Experience how Canvas AEL turns passive plays into active conversions.
         </p>
         
         <button onClick={handleUnlockExperience} className="gradient-button">
@@ -233,7 +233,7 @@ export default function CanvasAEMLanding() {
       {/* Second Section */}
       <section ref={section2Ref} className="canvas-section second-section">
         <h2 className="gradient-heading heading-secondary">
-          Built for Modern Media Workflows
+          Your content already captivates. Now let it CONVERT!
         </h2>
 
         <div className="content-container">

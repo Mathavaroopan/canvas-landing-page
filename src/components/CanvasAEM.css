@@ -13,8 +13,7 @@
 /* Logo Styles */
 .canvas-logo {
   position: absolute;
-  top: 1.5rem;
-  left: 0.4rem;
+  top: 1rem;
   z-index: 10;
   width: 120px;
   height: 40px;
